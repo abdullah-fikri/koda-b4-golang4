@@ -41,6 +41,15 @@ func (u *User) Register(data []User) User {
 	fmt.Print("Confirm your password: ")
 	fmt.Scan(&passConfirm)
 
+	for i := range data {
+		if u.Email == data[i].Email {
+			fmt.Println("data is used! press enter to back...")
+			reader := bufio.NewReader(os.Stdin)
+			_, _ = reader.ReadString('\n')
+			return u.Register(data)
+		}
+	}
+
 	if pass == passConfirm {
 		u.Password = md5.HashMD5(pass)
 		data = append(data, User{
@@ -49,12 +58,9 @@ func (u *User) Register(data []User) User {
 			Email:     u.Email,
 			Password:  u.Password,
 		})
-	}
-
-	for i := range data {
-		if u.Email == data[i].Email {
-			fmt.Println("data is used! press enter to back...")
-		}
+	} else {
+		fmt.Println("password not match")
+		u.Register(data)
 	}
 
 	fmt.Printf("\nIs it true?\nFirst name: %s\nLast name: %s\nEmail: %s\n",
@@ -65,7 +71,6 @@ func (u *User) Register(data []User) User {
 
 	switch confirm {
 	case "y":
-		fmt.Println(data[0].Password)
 		fmt.Println("Register Success, press enter to back...")
 		reader := bufio.NewReader(os.Stdin)
 		_, _ = reader.ReadString('\n')
