@@ -21,6 +21,7 @@ func main() {
 	for {
 		var input string
 		var svc auth.AuthService = &auth.User{}
+		var loginSvc login.LoginService = &login.Service{}
 
 		if loginUser {
 
@@ -38,10 +39,12 @@ func main() {
 
 			switch input {
 			case "1":
-				login.ListUser(&data)
+				loginSvc.ListUser(&data)
 			case "2":
-				login.Logout(currentUser)
+				loginSvc.LogOut(currentUser)
+				currentUser = nil
 				loginUser = false
+
 			case "0":
 				os.Exit(0)
 			}

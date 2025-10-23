@@ -7,9 +7,9 @@ import (
 	"os"
 )
 
-func Logout(currentUser *auth.User) {
-	currentUser = nil
+func (s *Service) LogOut(currentUser *auth.User) bool {
 	fmt.Println("logOut success, press enter to back...")
 	reader := bufio.NewReader(os.Stdin)
 	_, _ = reader.ReadString('\n')
+	return true
 }
