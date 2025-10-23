@@ -8,13 +8,19 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(fmt.Sprint(r))
+			main()
+		}
+	}()
 	data := []auth.User{}
 	loginUser := false
 	var currentUser *auth.User
 
 	for {
 		var input string
-		u := auth.User{}
+		var svc auth.AuthService = &auth.User{}
 
 		if loginUser {
 
@@ -32,9 +38,12 @@ func main() {
 
 			switch input {
 			case "1":
-				login.ListUser(data)
+				login.ListUser(&data)
 			case "2":
-				login.Logout()
+				login.Logout(currentUser)
+				loginUser = false
+			case "0":
+				os.Exit(0)
 			}
 
 		} else {
@@ -52,18 +61,21 @@ func main() {
 
 			switch input {
 			case "1":
-				registeredUser := u.Register(data)
+				registeredUser := svc.Register(data)
 				data = append(data, registeredUser)
 
 			case "2":
-				loggedInUser, y := u.Login(data)
+				loggedInUser, y := svc.Login(data)
 				if y {
 					loginUser = true
 					currentUser = loggedInUser
 				}
 
 			case "3":
-				auth.ForgotPassword()
+				if len(data) == 0 {
+					panic("not data yet...")
+				}
+				svc.ForgotPassword(&data)
 
 			case "0":
 				fmt.Println("Goodbye!")

@@ -3,6 +3,7 @@ package auth
 import (
 	"bufio"
 	"fmt"
+	"golang4/md5"
 	"os"
 )
 
@@ -17,7 +18,7 @@ func (u *User) Login(data []User) (*User, bool) {
 
 	found := false
 	for i := range data {
-		if u.Email == data[i].Email && u.Password == data[i].Password {
+		if u.Email == data[i].Email && md5.HashMD5(u.Password) == data[i].Password {
 			found = true
 			fmt.Println("Login Success, press enter to back...")
 			reader := bufio.NewReader(os.Stdin)

@@ -3,6 +3,7 @@ package auth
 import (
 	"bufio"
 	"fmt"
+	"golang4/md5"
 	"os"
 )
 
@@ -14,8 +15,14 @@ type User struct {
 	ConfirmPassword string
 }
 
+type AuthService interface {
+	Register([]User) User
+	Login([]User) (*User, bool)
+	ForgotPassword(*[]User)
+}
+
 func (u *User) Register(data []User) User {
-	var confirm string
+	var confirm, pass, passConfirm string
 
 	fmt.Println("\n--- Register ---")
 
@@ -29,10 +36,20 @@ func (u *User) Register(data []User) User {
 	fmt.Scan(&u.Email)
 
 	fmt.Print("Enter a strong password: ")
-	fmt.Scan(&u.Password)
+	fmt.Scan(&pass)
 
 	fmt.Print("Confirm your password: ")
-	fmt.Scan(&u.ConfirmPassword)
+	fmt.Scan(&passConfirm)
+
+	if pass == passConfirm {
+		u.Password = md5.HashMD5(pass)
+		data = append(data, User{
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Email:     u.Email,
+			Password:  u.Password,
+		})
+	}
 
 	for i := range data {
 		if u.Email == data[i].Email {
@@ -48,6 +65,7 @@ func (u *User) Register(data []User) User {
 
 	switch confirm {
 	case "y":
+		fmt.Println(data[0].Password)
 		fmt.Println("Register Success, press enter to back...")
 		reader := bufio.NewReader(os.Stdin)
 		_, _ = reader.ReadString('\n')
